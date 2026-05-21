@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class Shooter : MonoBehaviour
 {
-    public float range = 10f;
+    public float range = 50f;
+    public int damage = 1;
 
     public GameObject muzzleFlash;
     public Transform muzzlePoint;
@@ -29,21 +30,34 @@ public class Shooter : MonoBehaviour
 
     void Shoot()
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray = new Ray(
+            muzzlePoint.position,
+            muzzlePoint.forward
+        );
 
         if (Physics.Raycast(ray, out RaycastHit hit, range))
         {
-            Destroy(hit.collider.gameObject);
+            EnemyHealth enemy =
+                hit.collider.GetComponent<EnemyHealth>();
+
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+            }
         }
 
-        GameObject flash = Instantiate(
-            muzzleFlash,
-            muzzlePoint.position,
-            muzzlePoint.rotation
-        );
+        if (muzzleFlash != null)
+        {
+            GameObject flash = Instantiate(
+                muzzleFlash,
+                muzzlePoint.position,
+                muzzlePoint.rotation
+            );
 
-        flash.transform.localScale = Vector3.one * 0.1f;
+            flash.transform.localScale =
+                new Vector3(0.05f, 0.05f, 0.15f);
 
-        Destroy(flash, 0.1f);
+            Destroy(flash, 0.1f);
+        }
     }
 }
